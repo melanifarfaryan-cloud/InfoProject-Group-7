@@ -11,3 +11,7 @@ In addition, we implemented a function to detect long-distance flights (more tha
 Finally, we updated the interface so users can use all these new features easily, including loading flight data, saving it, viewing plots, and displaying routes on the map.
 ## VERSION 3:
 To be released soon.
+## VERSION 4:
+To be released soon.
+## VERSION 5:
+To be released soon.
