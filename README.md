@@ -1,4 +1,4 @@
-# VERSIONS INFORMATION
+# VERSION OVERVIEW
 ## VERSION 1:
 In this version, we created the basic part of the project. We made an Airport class that stores the airport code, its location (latitude and longitude), and whether it is in the Schengen area. We also added functions to work with this data: we can load airports from a file, add new airports, remove airports, and check if an airport is in Schengen using its code.
 We also added functions to save only the Schengen airports into a file and to show the information of each airport clearly on the screen. To make the program easier to understand, we created a graph that shows the number of Schengen and non-Schengen airports. We also added a map in Google Earth to show where the airports are, using different colors for each type.
