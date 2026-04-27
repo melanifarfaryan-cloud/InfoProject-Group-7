@@ -10,4 +10,4 @@ We also added a map in Google Earth to show the routes of the flights from their
 In addition, we implemented a function to detect long-distance flights (more than 2000 km), which may need special attention.
 Finally, we updated the interface so users can use all these new features easily, including loading flight data, saving it, viewing plots, and displaying routes on the map.
 ## VERSION 3:
-WILL BE PUBLISHED SOON!!
+To be released soon.
