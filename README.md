@@ -13,5 +13,3 @@ Finally, we updated the interface so users can use all these new features easily
 To be released soon.
 ## VERSION 4:
 To be released soon.
-## VERSION 5:
-To be released soon.
