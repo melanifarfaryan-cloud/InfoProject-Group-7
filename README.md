@@ -9,3 +9,5 @@ We added functions to work with this data: we can load flights from a file, save
 We also added a map in Google Earth to show the routes of the flights from their origin to Barcelona, using different colors depending on whether they come from Schengen countries or not.
 In addition, we implemented a function to detect long-distance flights (more than 2000 km), which may need special attention.
 Finally, we updated the interface so users can use all these new features easily, including loading flight data, saving it, viewing plots, and displaying routes on the map.
+## VERSION 3:
+WILL BE PUBLISHED SOON!!
