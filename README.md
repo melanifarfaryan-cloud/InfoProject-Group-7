@@ -1,8 +1,14 @@
 <p align="center">
   <img src="image0.jpeg" width="30%" alt="Estudiante 1" />
-  <img src="image1.jpeg" width="30%" alt="Estudiante 2" />
+  <img src="[image1.jpeg](https://github.com/user-attachments/assets/abf6c0d5-0077-4b4e-b456-4b651377fb44)" width="30%" alt="Estudiante 2" />
   <img src="image2.jpeg" width="30%" alt="Estudiante 3" />
 </p>
+
+
+<"https://github.com/user-attachments/assets/abf6c0d5-0077-4b4e-b456-4b651377fb44" />
+
+
+
 
 # VERSION OVERVIEW
 ## VERSION 1:
