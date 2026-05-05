@@ -1,3 +1,4 @@
+<img width="705" height="760" alt="image0" src="https://github.com/user-attachments/assets/45047a00-be59-414b-87c5-d0bc7c526aa7" /><img width="1290" height="1694" alt="image1" src="https://github.com/user-attachments/assets/076f0cdf-92f8-41d9-9892-8c89880ad983" /><img width="1290" height="2183" alt="image2" src="https://github.com/user-attachments/assets/6ef97ad5-9073-4b02-b174-2ab4fe0e4071" />
 # VERSION OVERVIEW
 ## VERSION 1:
 In this version, we created the basic part of the project. We made an Airport class that stores the airport code, its location (latitude and longitude), and whether it is in the Schengen area. We also added functions to work with this data: we can load airports from a file, add new airports, remove airports, and check if an airport is in Schengen using its code.
