@@ -1,4 +1,8 @@
-<p align="center"><img src="https://github.com/user-attachments/assets/6baaedf7-4e59-479d-9eb0-64dcb7942d2d" />" width="30%" /><img src="https://github.com/user-attachments/assets/aded12e8-4903-4ed4-81fd-eee9bc6de62c" />" width="30%" /><img src="https://github.com/user-attachments/assets/729db06a-5962-4a6f-94c4-491d16a3dbfd" />" width="30%" /></p>
+<p align="center">
+  <img src="image0.jpeg" width="30%" alt="Estudiante 1" />
+  <img src="image1.jpeg" width="30%" alt="Estudiante 2" />
+  <img src="image2.jpeg" width="30%" alt="Estudiante 3" />
+</p>
 
 # VERSION OVERVIEW
 ## VERSION 1:
