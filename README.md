@@ -1,4 +1,11 @@
-<img width="100" height="100" alt="image0" src="https://github.com/user-attachments/assets/45047a00-be59-414b-87c5-d0bc7c526aa7" /><img width="100" height="100" alt="image1" src="https://github.com/user-attachments/assets/076f0cdf-92f8-41d9-9892-8c89880ad983" /><img width="100" height="100" alt="image2" src="https://github.com/user-attachments/assets/6ef97ad5-9073-4b02-b174-2ab4fe0e4071" />
+<p align="center">
+  <img src="<img width="705" height="760" alt="image0" src="https://github.com/user-attachments/assets/6baaedf7-4e59-479d-9eb0-64dcb7942d2d" />
+" width="30%" />
+  <img src="<img width="1290" height="1349" alt="image1" src="https://github.com/user-attachments/assets/aded12e8-4903-4ed4-81fd-eee9bc6de62c" />
+" width="30%" />
+  <img src="<img width="1290" height="1421" alt="image2" src="https://github.com/user-attachments/assets/729db06a-5962-4a6f-94c4-491d16a3dbfd" />
+" width="30%" />
+</p>
 # VERSION OVERVIEW
 ## VERSION 1:
 In this version, we created the basic part of the project. We made an Airport class that stores the airport code, its location (latitude and longitude), and whether it is in the Schengen area. We also added functions to work with this data: we can load airports from a file, add new airports, remove airports, and check if an airport is in Schengen using its code.
