@@ -5,9 +5,6 @@
 </p>
 
 
-<"https://github.com/user-attachments/assets/abf6c0d5-0077-4b4e-b456-4b651377fb44" />
-
-
 
 
 # VERSION OVERVIEW
