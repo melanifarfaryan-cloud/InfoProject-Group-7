@@ -1,8 +1,10 @@
 <p align="center">
-  <img src="image0.jpeg" width="30%" alt="Estudiante 1" />
-  <img src="[image1.jpeg](https://github.com/user-attachments/assets/abf6c0d5-0077-4b4e-b456-4b651377fb44)" width="30%" alt="Estudiante 2" />
-  <img src="image2.jpeg" width="30%" alt="Estudiante 3" />
+  <img src="https://github.com/user-attachments/assets/124b5828-7d80-4bf3-8bf1-0402a988daa0" width="30%" alt="image1" />
+  <img src="https://github.com/user-attachments/assets/f254e781-5f23-4c40-ae1d-f60941c24613" width="30%" alt="image0" />
+  <img src="https://github.com/user-attachments/assets/e292eb5e-0582-418b-af10-fbc1aefcfc4d" width="30%" alt="image2" />
 </p>
+
+
 
 
 
