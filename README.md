@@ -27,6 +27,11 @@ Finally, we updated the interface so users can use all these new features easily
 Link video: https://www.youtube.com/watch?v=_cnyBX8HjV8
 
 ## VERSION 3:
-To be released soon.
+In this version, we added the management of the boarding gates at Barcelona airport (LEBL). To do this, we created the BarcelonaAP, Terminal, BoardingArea, and Gate classes, which allow us to represent the structure of the airport. Now, the program loads this structure directly from a text file and reads which terminal is assigned to each airline. With this information, the system automatically searches for a free gate for each arriving flight, checking if the airplane must go to the Schengen or non-Schengen area based on its origin.
+Additionally, we used this delivery to fix several mistakes from the previous versions. First, we fully documented the program code by adding explanatory comments using the hashtag symbol. We also added the filter applied to the plots so they show the data correctly, and we repaired the operation of the function that detects long-distance flights.
+Finally, we expanded the interface so the user can build the structure of Barcelona airport, assign gates to arriving flights, and see which ones are occupied at any time. As a pending task for the future, we left the integration of the Google Earth window inside the program interface itself, since for now it still opens separately.
+
+Link video:
+
 ## VERSION 4:
 To be released soon.
