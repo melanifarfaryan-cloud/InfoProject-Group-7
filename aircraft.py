@@ -127,7 +127,7 @@ def PlotAirlines(aircrafts):
             counts.append(1)
         i = i + 1
 
-    plt.bar(airlines, counts)
+    plt.bar(airlines, counts, color="plum")
     plt.xlabel("Airlines")
     plt.ylabel("Flights")
     plt.title("Flights per airline")

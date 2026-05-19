@@ -96,11 +96,14 @@ def insertar_grafico(funcion_plot, datos, filtro=None):
     try:
         datos_a_dibujar = datos
         if filtro:
-            termino_busqueda = filtro.strip().upper()
+            terminos_busqueda = [t.strip().upper() for t in filtro.split(",")]
+
             if funcion_plot == PlotAirlines:
-                datos_a_dibujar = [d for d in datos if d.company.strip().upper() == termino_busqueda]
+                # Cambiamos '==' por 'in' para buscar en la lista
+                datos_a_dibujar = [d for d in datos if d.company.strip().upper() in terminos_busqueda]
+
             elif funcion_plot == PlotAirports:
-                datos_a_dibujar = [d for d in datos if d.icao.strip().upper() == termino_busqueda]
+                datos_a_dibujar = [d for d in datos if d.icao.strip().upper() == terminos_busqueda]
         if not datos_a_dibujar:
             tk.Label(frame_display, text=f"No se encontraron: '{filtro}'", fg="red", bg="white",
                      font=("Arial", 12, "bold")).pack(pady=50)
