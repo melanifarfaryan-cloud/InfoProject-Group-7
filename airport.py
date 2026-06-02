@@ -1,7 +1,7 @@
 import os
 import platform
 import subprocess
-import matplotlib.pyplot as plt
+
 
 class Airport: #Representa un aeropuerto con su ICAO y su ubicación
     def __init__(self, icao, latitude, longitude):
@@ -159,7 +159,6 @@ def PlotAirports(airports):
     plt.ylabel("Count")
     plt.title("Schengen airports")
     plt.legend()
-    plt.show()
 
 
 #Abre un archivo kml que muestra en Google Earth diferentes puntos donde se encuentran los aeropuertos Schengen y no Schengen
@@ -213,7 +212,7 @@ def MapAirports(airports):
     archivo.write('</kml>\n')
     archivo.close()
 
-    #Abre automaticamente el archivo según el sistema operativo del usuario
+    #Abre automáticamente el archivo según el sistema operativo del usuario
     try:
         if platform.system() == "Windows":
             os.startfile("airports.kml")
