@@ -33,6 +33,6 @@ We implemented functionalities to load the airport structure from a file and aut
 Link video: https://youtu.be/z5NFuWGLZGk?si=uKpQFQM55Aba5wRO
 
 ## VERSION 4:
-This is the version with more features, funtions and improvements. It is out most important version. It contins the fundamental required funtions of version 4 plus our spectacular funcions that will suprise the user, including a highly devolped improvemnt of the interface.
+This is the version with more features, funtions and improvements. It is out most important version. It contains the fundamental required funtions of version 4 plus our spectacular funcions that will suprise the user, including a highly devolped improvemnt of the interface.
 NEXT: EXPLAIN ALL FUNTIONS AND INTERFACE IMPROVEMNT ONE-BY-ONE
 ......
