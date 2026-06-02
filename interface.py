@@ -1354,6 +1354,66 @@ def ejecutar_grafico_v4():
         mostrar_imagen_original()
 
 
+def AutomaticAssignGateSimple():
+
+    global bcn, arrivals
+
+    # Validaciones previas para evitar caídas
+    if not bcn or bcn == -1:
+        messagebox.showwarning("Atención", "El mapa o estructura de Barcelona (bcn) no está cargado.")
+        return
+
+    if not arrivals:
+        messagebox.showwarning("Atención", "No hay aviones cargados en la lista de llegadas (Arrivals).")
+        return
+
+    asignados = 0
+    fallidos = 0
+    lista_detalles_fallos = []
+
+    # Recorre todos los aviones que están llegando
+    for avion in arrivals:
+        resultado = AssignGate(bcn, avion)
+
+        if resultado == -1:
+            fallidos += 1
+            ac_id = avion.id if hasattr(avion, 'id') else "Desconocido"
+            lista_detalles_fallos.append(ac_id)
+        else:
+            asignados += 1
+
+    limpiar_display()
+    frame_display.configure(bg=COL_BG)
+    retro_label(frame_display, "ASIGNACIÓN AUTOMÁTICA DE PUERTAS", font=(FONT_FAMILY, 14)).pack(pady=16)
+
+    panel_resumen = tk.Frame(frame_display, bg=COL_WHITE, bd=3, relief="solid", padx=20, pady=20)
+    panel_resumen.pack(expand=True, padx=40, pady=10)
+
+    retro_label(panel_resumen, f"Total aviones procesados: {len(arrivals)}", font=FONT_PIXEL, fg=COL_INK).pack(pady=6)
+    retro_label(panel_resumen, f"Asignaciones completadas: {asignados}", font=FONT_PIXEL, fg=COL_GREEN).pack(pady=6)
+    retro_label(panel_resumen, f"Fallidos (sin puerta libre): {fallidos}", font=FONT_PIXEL, fg=COL_RED).pack(pady=6)
+
+    if fallidos > 0:
+        retro_label(panel_resumen, "Aviones sin puerta:", font=FONT_PIXEL_SMALL, fg=COL_SHADOW).pack(pady=(10, 2))
+
+        frame_scroll = tk.Frame(panel_resumen, bg=COL_WHITE)
+        frame_scroll.pack(fill="both", expand=True)
+
+        scr = tk.Scrollbar(frame_scroll)
+        scr.pack(side="right", fill="y")
+
+        lb = tk.Listbox(frame_scroll, font=("Courier New", 10, "bold"), bg=COL_WHITE, fg=COL_RED, height=4,
+                        yscrollcommand=scr.set, bd=1, relief="solid")
+        for f in lista_detalles_fallos:
+            lb.insert("end", f" Avión: {f}")
+        lb.pack(side="left", fill="both", expand=True)
+        scr.config(command=lb.yview)
+
+    style_regular_button(tk.Button(frame_display, text="VOLVER", command=mostrar_imagen_original), COL_PINK).pack(
+        pady=15)
+    label_estado.config(text=f"Proceso concluído. Éxitos: {asignados} | Fallos: {fallidos}")
+
+
 #FUNCIONES EXTRA
 
 def SimulateDelaysSimple():
@@ -1632,6 +1692,7 @@ def MapFlightsDynamicSimple():
         mostrar_imagen_original()
 
 
+
 def botones_p1():
     return [
         ("LOAD\nAIRPORTS", lambda: [globals().update(airports=LoadAirports("Airports.txt")), label_estado.config(text="Airports Loaded", fg=COL_GREEN)], COL_GREEN),
@@ -1652,7 +1713,13 @@ def botones_p2():
         ("PLOT\nAIRLINES", lambda: insertar_grafico(PlotAirlines, arrivals), COL_PINK),
         ("PLOT\nSCHENGEN", lambda: insertar_grafico(PlotFlightsType, arrivals), COL_ORANGE),
         ("MAP\nKML", lambda: ejecutar_google_earth_flights(), COL_CYAN),
-        ("LONG\nDIST", lambda: mostrar_lista_vuelos(LongDistanceArrivals(arrivals, airports)), COL_PINK),
+        ("LONG\nDIST", lambda: [
+            # 1. Si la lista global de aeropuertos está vacía, la cargamos automáticamente
+            globals().update(airports=LoadAirports("Airports.txt")) if not airports else None,
+
+            # 2. Enviamos los vuelos filtrados a la pantalla
+            mostrar_lista_vuelos(LongDistanceArrivals(arrivals, airports))
+        ], COL_PINK),
 
         # Funciones extra
         ("SIMUL CLIMA", lambda: SimulateDelaysSimple(), COL_GREEN),
@@ -1672,6 +1739,7 @@ def botones_p3():
         ("6 PLOT DAY\nOCCUPANCY", ejecutar_grafico_v4, COL_PINK),
         ("7 NIGHT\nAIRCRAFTS", gestionar_pernocta, COL_ORANGE),
         ("8 TIME\nSIMULATOR", mostrar_simulador_interactivo, COL_GREEN),
+        ("ASIGNACIÓN AUTOMÁTICA", lambda: AutomaticAssignGateSimple(), COL_ORANGE)
     ]
 
 

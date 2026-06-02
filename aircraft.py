@@ -259,7 +259,7 @@ def CalcDist(lat1, lon1, lat2, lon2):
     a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2
 
     # Asegura que 'a' no sea negativo por errores de precisión y no pase de 1
-    a = max(0, min(1, int(a)))
+    a = max(0, min(1, a))
 
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return r * c
@@ -285,22 +285,28 @@ def CoordsOrg(icao_buscado, lista_aeropuertos):
 # Extrae de la lista de vuelos globales, aquellos cuya trayectoria hasta LEBL supera los 2000km y crea una nueva lista con ellos
 def LongDistanceArrivals(aircrafts, airports):
     lista_final = []
+
+    # Coordenadas de Barcelona convertidas directamente a radianes
     lat_barcelona = 41.2974
     lon_barcelona = 2.0833
-    i = 0
 
+    i = 0
     while i < len(aircrafts):
         avion = aircrafts[i]
         codigo_origen = avion.origin
+
         if codigo_origen != None:
             lat_org, lon_org, exito = CoordsOrg(codigo_origen, airports)
+
             if exito == True:
                 d = CalcDist(lat_org, lon_org, lat_barcelona, lon_barcelona)
                 if d > 2000:
                     lista_final.append(avion)
         i = i + 1
 
-    return lista_final # Devuelve la lista
+    return lista_final
+
+
 
 # Lee el archivo departures y devuelve una lista de objetos Aircraft con información sobre su salida
 def LoadDepartures(filename):
