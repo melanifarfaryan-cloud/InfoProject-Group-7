@@ -2,7 +2,6 @@ import ctypes
 import os
 import random
 import tkinter as tk
-from tkinter import messagebox
 
 import matplotlib
 
@@ -194,6 +193,19 @@ def style_regular_button(btn, accent=COL_CYAN):
     )
     return btn
 
+
+
+def mostrar_aviso_integrado(titulo, mensaje, color=None, btn_volver=True):
+    """Muestra un aviso directamente en frame_display sin popup."""
+    color = color or COL_ORANGE
+    limpiar_display()
+    frame_display.configure(bg=COL_BG)
+    panel = tk.Frame(frame_display, bg=COL_PANEL, bd=4, relief="ridge", padx=30, pady=30)
+    panel.place(relx=0.5, rely=0.5, anchor="center")
+    retro_label(panel, titulo, font=(FONT_FAMILY, 13), fg=color, bg=COL_PANEL).pack(pady=(0, 10))
+    retro_label(panel, mensaje, font=FONT_PIXEL_SMALL, fg=COL_INK, bg=COL_PANEL).pack(pady=5)
+    if btn_volver:
+        style_regular_button(tk.Button(panel, text="VOLVER", command=mostrar_imagen_original), COL_PINK).pack(pady=12)
 
 def integrar_grafico_pixel(fig):
     fig.patch.set_facecolor(COL_WHITE)
@@ -394,6 +406,17 @@ def mostrar_loading():
     root.bind("<space>", press_space)
     root.bind("<KeyRelease-space>", release_space)
 
+    def skip_game(event=None):
+        if state["running"]:
+            state["running"] = False
+            root.unbind("<space>")
+            root.unbind("<KeyRelease-space>")
+            root.unbind("<Return>")
+            label_estado.config(text="Mini-juego saltado")
+            canvas.after(200, mostrar_start)
+
+    root.bind("<Return>", skip_game)
+
     def finish_game():
         state["running"] = False
         root.unbind("<space>")
@@ -498,7 +521,7 @@ def mostrar_loading():
 
         canvas.create_text(w // 2 + 4, 66 + 4, text="LOADING LEVEL", fill=COL_SHADOW, font=(FONT_FAMILY, 24))
         canvas.create_text(w // 2, 66, text="LOADING LEVEL", fill=COL_TEXT, font=(FONT_FAMILY, 24))
-        canvas.create_text(w // 2, 105, text="MANTEN ESPACIO PARA SUBIR", fill=COL_INK, font=FONT_PIXEL)
+        canvas.create_text(w // 2, 105, text="MANTEN ESPACIO PARA SUBIR  |  ENTER para saltarlo", fill=COL_INK, font=FONT_PIXEL)
 
         bar_x = 90
         bar_y = h - 62
@@ -675,7 +698,8 @@ def mostrar_lista_vuelos(vuelos_filtrados):
 
 def insertar_grafico(funcion_plot, datos, filtro=None):
     if not datos:
-        messagebox.showwarning("Atencion", "No hay datos cargados para graficar.")
+        label_estado.config(text="Sin datos para graficar.", fg=COL_ORANGE)
+        mostrar_aviso_integrado("SIN DATOS", "No hay datos cargados para graficar.", COL_ORANGE)
         return
 
     limpiar_display()
@@ -739,8 +763,8 @@ def insertar_grafico(funcion_plot, datos, filtro=None):
                              COL_PINK).pack(pady=8)
 
     except Exception as e:
-        messagebox.showerror("Error", f"Error al graficar: {e}")
-        mostrar_imagen_original()
+        label_estado.config(text=f"Error al graficar: {e}", fg=COL_RED)
+        mostrar_aviso_integrado("ERROR GRÁFICO", f"Error al graficar:\n{e}", COL_RED)
 
 
 def _read_attr(obj, names):
@@ -1137,7 +1161,7 @@ def refrescar_contenido_puertas(datos, mantener_control=False):
 
 def mostrar_lista_puertas(datos):
     if bcn is None or bcn == -1:
-        messagebox.showwarning("Atencion", "Carga LEBL primero")
+        mostrar_aviso_integrado("AVISO", "Carga LEBL primero (Botón 1)", COL_ORANGE)
         return
 
     refrescar_contenido_puertas(datos, mantener_control=True)
@@ -1145,7 +1169,7 @@ def mostrar_lista_puertas(datos):
 
 def mostrar_simulador_interactivo():
     if not bcn or not movements:
-        messagebox.showwarning("Atencion", "Carga los datos de LEBL primero")
+        mostrar_aviso_integrado("AVISO", "Carga los datos de LEBL primero (Botón 1)", COL_ORANGE)
         return
 
     resetear_puertas_bcn()
@@ -1194,7 +1218,7 @@ def mostrar_buscador_integrado():
 
 def mostrar_form_assign_gate():
     if not bcn:
-        messagebox.showwarning("Atencion", "Carga primero el aeropuerto (Load LEBL)")
+        mostrar_aviso_integrado("AVISO", "Carga primero el aeropuerto (Load LEBL)", COL_ORANGE)
         return
 
     limpiar_display()
@@ -1260,12 +1284,12 @@ def cargar_v4_completo():
         label_estado.config(text="V4: Datos cargados y fusionados", fg=COL_CYAN)
     else:
         label_estado.config(text="Error: Revisa el formato de los .txt", fg=COL_RED)
-        messagebox.showerror("Error", "No se pudieron procesar los vuelos.\nRevisa la consola.")
+        mostrar_aviso_integrado("ERROR DE CARGA", "No se pudieron procesar los vuelos.\nRevisa los archivos .txt", COL_RED)
 
 
 def mostrar_form_assign_time():
     if not bcn or not movements:
-        messagebox.showwarning("Atencion", "Debes cargar los datos LEBL (V4) primero.")
+        mostrar_aviso_integrado("AVISO", "Debes cargar los datos LEBL (V4) primero.", COL_ORANGE)
         return
 
     limpiar_display()
@@ -1305,22 +1329,23 @@ def mostrar_form_assign_time():
 
 def gestionar_pernocta():
     if not bcn or not movements:
-        messagebox.showwarning("Error", "Carga LEBL primero")
+        mostrar_aviso_integrado("AVISO", "Carga LEBL primero (Botón 1)", COL_ORANGE)
         return
 
     aviones_noche = NightAircraft(movements)
 
     if not aviones_noche:
-        messagebox.showinfo("Info", "No hay aviones de pernocta.")
+        label_estado.config(text="No hay aviones de pernocta.")
+        mostrar_aviso_integrado("INFO", "No hay aviones de pernocta en esta sesión.", COL_CYAN)
         return
 
+    label_estado.config(text=f"Pernocta: {len(aviones_noche)} aviones posicionados.", fg=COL_GREEN)
     mostrar_lista_puertas(GateOccupancy(bcn))
-    messagebox.showinfo("Exito", f"Se han posicionado {len(aviones_noche)} aviones de pernocta.")
 
 
 def ejecutar_grafico_v4():
     if not bcn or not movements:
-        messagebox.showwarning("Error", "Carga primero los datos V4")
+        mostrar_aviso_integrado("AVISO", "Carga primero los datos V4 (Botón 1)", COL_ORANGE)
         return
 
     limpiar_display()
@@ -1350,8 +1375,8 @@ def ejecutar_grafico_v4():
         style_regular_button(tk.Button(frame_display, text="CERRAR GRAFICO", command=mostrar_imagen_original), COL_PINK).pack(pady=8)
 
     except Exception as e:
-        messagebox.showerror("Error", f"Error al graficar: {e}")
-        mostrar_imagen_original()
+        label_estado.config(text=f"Error al graficar: {e}", fg=COL_RED)
+        mostrar_aviso_integrado("ERROR GRÁFICO", f"Error al graficar:\n{e}", COL_RED)
 
 
 def AutomaticAssignGateSimple():
@@ -1360,11 +1385,11 @@ def AutomaticAssignGateSimple():
 
     # Validaciones previas para evitar caídas
     if not bcn or bcn == -1:
-        messagebox.showwarning("Atención", "El mapa o estructura de Barcelona (bcn) no está cargado.")
+        mostrar_aviso_integrado("AVISO", "El mapa o estructura de Barcelona (bcn) no está cargado.", COL_ORANGE)
         return
 
     if not arrivals:
-        messagebox.showwarning("Atención", "No hay aviones cargados en la lista de llegadas (Arrivals).")
+        mostrar_aviso_integrado("AVISO", "No hay aviones cargados en la lista de llegadas (Arrivals).", COL_ORANGE)
         return
 
     asignados = 0
@@ -1423,7 +1448,7 @@ def SimulateDelaysSimple():
 
     todos_vuelos = movements if movements else (arrivals + departures)
     if not todos_vuelos:
-        messagebox.showwarning("Atención", "No hay vuelos cargados para aplicar retrasos.")
+        mostrar_aviso_integrado("AVISO", "No hay vuelos cargados para aplicar retrasos.", COL_ORANGE)
         return
 
     vuelos_afectados = 0
@@ -1475,7 +1500,7 @@ def GenerarReporteEficiencia():
 
     global arrivals
     if not arrivals:
-        messagebox.showwarning("Atención", "Carga los vuelos de llegada (Arrivals) primero.")
+        mostrar_aviso_integrado("AVISO", "Carga los vuelos de llegada (Arrivals) primero.", COL_ORANGE)
         return
 
     cuenta_t1 = 0
@@ -1550,10 +1575,10 @@ def GuardarConfiguracionPersonalizada():
                 codigos = [str(_airport_code(a)) for a in airports[:10]]
                 writer.writerow(["Aeropuertos", "Muestra de Códigos Activos", ", ".join(codigos)])
 
-        messagebox.showinfo("Éxito", f"Configuración exportada correctamente en:\n{filepath}")
+        label_estado.config(text=f"Configuración guardada en: {filepath}", fg=COL_GREEN)
         label_estado.config(text="Configuración guardada en CSV.")
     except Exception as e:
-        messagebox.showerror("Error", f"No se pudo guardar la configuración: {e}")
+        label_estado.config(text=f"Error al guardar: {e}", fg=COL_RED)
 
 
 import os
@@ -1566,7 +1591,7 @@ def MapFlightsDynamicSimple():
     # Consolidar los vuelos disponibles según lo cargado en memoria
     vuelos_actuales = movements if movements else (arrivals + departures)
     if not vuelos_actuales:
-        messagebox.showwarning("Atención", "No hay vuelos cargados para mapear en Google Earth.")
+        mostrar_aviso_integrado("AVISO", "No hay vuelos cargados para mapear en Google Earth.", COL_ORANGE)
         return
 
     # Asegurar que la lista de aeropuertos está inicializada
@@ -1688,8 +1713,8 @@ def MapFlightsDynamicSimple():
         label_estado.config(text="KML ejecutado en la aplicación de Google Earth.")
 
     except Exception as e:
-        messagebox.showerror("Error", f"No se pudo ejecutar Google Earth Pro: {e}")
-        mostrar_imagen_original()
+        label_estado.config(text=f"Error Google Earth: {e}", fg=COL_RED)
+        mostrar_aviso_integrado("ERROR", f"No se pudo ejecutar Google Earth Pro:\n{e}", COL_RED)
 
 
 
