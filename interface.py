@@ -1922,7 +1922,6 @@ def botones_p2():
          COL_GREEN),
         ("PLOT\nAIRLINES", lambda: insertar_grafico(PlotAirlines, arrivals), COL_PINK),
         ("PLOT\nSCHENGEN", lambda: insertar_grafico(PlotFlightsType, arrivals), COL_ORANGE),
-        ("MAP LONG\nDIST", ejecutar_google_earth_vuelos_largos, COL_CYAN),
         ("MAP\nKML", lambda: ejecutar_google_earth_flights(), COL_CYAN),
         ("LONG\nDIST", lambda: [
             # 1. Si la lista global de aeropuertos está vacía, la cargamos automáticamente
@@ -1931,12 +1930,12 @@ def botones_p2():
             # 2. Enviamos los vuelos filtrados a la pantalla
             mostrar_lista_vuelos(LongDistanceArrivals(arrivals, airports))
         ], COL_PINK),
-
+        ("MAP LONG\nDIST", ejecutar_google_earth_vuelos_largos, COL_CYAN),
         # Funciones extra
         ("SIMUL CLIMA", lambda: SimulateDelaysSimple(), COL_GREEN),
         ("EFICIENCIA", lambda: GenerarReporteEficiencia(), COL_CYAN),
         ("GUARDAR CONF", lambda: GuardarConfiguracionPersonalizada(), COL_PINK),
-        ("GOOGLE EARTH", lambda: MapFlightsDynamicSimple(), COL_ORANGE)
+        ("MAPA TEMPORAL VUELOS", lambda: MapFlightsDynamicSimple(), COL_ORANGE)
     ]
 
 
