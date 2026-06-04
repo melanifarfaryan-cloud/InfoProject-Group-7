@@ -721,7 +721,7 @@ def insertar_grafico(funcion_plot, datos, filtro=None):
         valor = entry_filtro.get().strip().upper()
         insertar_grafico(funcion_plot, datos, filtro=valor if valor != "" else None)
 
-    style_regular_button(tk.Button(frame_buscador, text="FILTRAR", command=ejecutar_filtro), COL_GREEN).pack(
+    style_regular_button(tk.Button(frame_buscador, text="FILTRAR (separar codigos por espacios)", command=ejecutar_filtro), COL_GREEN).pack(
         side="left")
     entry_filtro.bind("<Return>", lambda e: ejecutar_filtro())
 
