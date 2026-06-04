@@ -1822,6 +1822,7 @@ def botones_p2():
          COL_GREEN),
         ("PLOT\nAIRLINES", lambda: insertar_grafico(PlotAirlines, arrivals), COL_PINK),
         ("PLOT\nSCHENGEN", lambda: insertar_grafico(PlotFlightsType, arrivals), COL_ORANGE),
+        ("MAP LONG\nDIST", ejecutar_google_earth_vuelos_largos, COL_CYAN),
         ("MAP\nKML", lambda: ejecutar_google_earth_flights(), COL_CYAN),
         ("LONG\nDIST", lambda: [
             # 1. Si la lista global de aeropuertos está vacía, la cargamos automáticamente
