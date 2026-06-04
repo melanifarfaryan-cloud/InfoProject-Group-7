@@ -898,130 +898,6 @@ def ejecutar_google_earth_airports():
     fig = _make_map_figure("PREVIEW GOOGLE EARTH - AIRPORTS", points)
     mostrar_mapa_integrado("GOOGLE EARTH / AIRPORTS", fig, status)
 
-
-def ejecutar_google_earth_flights():
-    _ensure_airports_loaded()
-    try:
-        MapFlights(arrivals)
-        status = "KML generado / Google Earth solicitado. Vista integrada abajo."
-    except Exception as e:
-        status = f"No se pudo abrir Google Earth: {e}"
-    lookup = _airport_lookup()
-    bcn_airport = lookup.get("LEBL")
-    lines = []
-    seen = set()
-    for flight in arrivals:
-        origin = getattr(flight, "origin", "").strip().upper()
-        airport = lookup.get(origin)
-        if airport:
-            seen.add(origin)
-            if bcn_airport:
-                airport_coords = _airport_coords(airport)
-                bcn_coords = _airport_coords(bcn_airport)
-                if airport_coords and bcn_coords:
-                    lat1, lon1 = airport_coords
-                    lat2, lon2 = bcn_coords
-                    lines.append((lon1, lat1, lon2, lat2))
-    points = []
-    for icao in sorted(seen):
-        coords = _airport_coords(lookup[icao])
-        if coords:
-            lat, lon = coords
-            points.append((icao, lon, lat))
-    if bcn_airport:
-        coords = _airport_coords(bcn_airport)
-        if coords:
-            lat, lon = coords
-            points.append((_airport_code(bcn_airport), lon, lat))
-    fig = _make_map_figure("PREVIEW GOOGLE EARTH - FLIGHTS", points, lines[:80])
-    mostrar_mapa_integrado("GOOGLE EARTH / FLIGHTS", fig, status)
-
-def ejecutar_google_earth_vuelos_largos():
-    #Genera un archivo KML únicamente con los vuelos que superen los 2000 km hacia/desde LEBL
-    global arrivals
-
-    #Validar que existan vuelos cargados en el sistema
-    if not arrivals:
-        messagebox.showwarning("Atención",
-                               "No hay vuelos cargados. Por favor, pulsa primero el botón '1 LOAD LEBL V3 DATA'.")
-        return
-
-    lista_aeropuertos = _ensure_airports_loaded()
-    ap_dict = {}
-    for ap in lista_aeropuertos:
-        icao_code = _airport_code(ap)
-        coords = _airport_coords(ap)
-        if icao_code and coords:
-            ap_dict[icao_code.upper()] = coords
-
-    #Obtener coordenadas base de Barcelona (LEBL)
-    if "LEBL" in ap_dict:
-        bcn_lat, bcn_lon = ap_dict["LEBL"]
-    else:
-        bcn_lat, bcn_lon = 41.2969, 2.0833
-
-    #Filtrar rutas que superen los 2000 km
-    kml_content = []
-    kml_content.append('<?xml version="1.0" encoding="UTF-8"?>')
-    kml_content.append('<kml xmlns="http://www.opengis.net/kml/2.2">')
-    kml_content.append('<Document>')
-    kml_content.append('  <name>Vuelos Larga Distancia (>2000 km)</name>')
-    kml_content.append(
-        '  <Style id="ruta_larga"><LineStyle><color>ff0000ff</color><width>4</width></LineStyle></Style>')
-
-    vuelos_encontrados = 0
-
-    for flight in arrivals:
-        origin = getattr(flight, "origin", "").strip().upper()
-        if origin in ap_dict:
-            orig_lat, orig_lon = ap_dict[origin]
-
-            # Calcular distancia real
-            distancia = calcular_distancia(bcn_lat, bcn_lon, orig_lat, orig_lon)
-
-            # Filtrar vuelos de más de 2000 km
-            if distancia > 2000:
-                vuelos_encontrados += 1
-                flight_id = getattr(flight, "id", "Desconocido")
-                company = getattr(flight, "company", "Aerolínea")
-
-                # Crear marca de posición y línea geométrica KML
-                kml_content.append('  <Placemark>')
-                kml_content.append(f'    <name>Vuelo {flight_id} ({company})</name>')
-                kml_content.append(f'    <description>Origen: {origin} | Distancia: {int(distancia)} km</description>')
-                kml_content.append('    <styleUrl>#ruta_larga</styleUrl>')
-                kml_content.append('    <LineString>')
-                kml_content.append('      <tessellate>1</tessellate>')
-                kml_content.append(f'      <coordinates>{orig_lon},{orig_lat},0 {bcn_lon},{bcn_lat},0</coordinates>')
-                kml_content.append('    </LineString>')
-                kml_content.append('  </Placemark>')
-
-    kml_content.append('</Document>')
-    kml_content.append('</kml>')
-
-    if vuelos_encontrados == 0:
-        messagebox.showinfo("Información", "No se encontraron vuelos entrantes con una distancia superior a 2000 km.")
-        return
-
-    #Escribir archivo KML y ejecutar Google Earth
-    kml_path = "vuelos_larga_distancia.kml"
-    try:
-        with open(kml_path, "w", encoding="utf-8") as f:
-            f.write("\n".join(kml_content))
-
-        import platform
-        import subprocess
-        if platform.system() == "Windows":
-            os.startfile(kml_path)
-        elif platform.system() == "Darwin":
-            subprocess.run(["open", kml_path])
-        else:
-            subprocess.run(["xdg-open", kml_path])
-
-        label_estado.config(text=f"Mapa con {vuelos_encontrados} vuelos largos enviado a Google Earth", fg=COL_GREEN)
-    except Exception as e:
-        messagebox.showerror("Error", f"No se pudo proyectar en Google Earth: {e}")
-
 def mostrar_form_add():
     limpiar_display()
     frame_display.configure(bg=COL_BG)
@@ -1800,6 +1676,129 @@ def MapFlightsDynamicSimple():
     except Exception as e:
         label_estado.config(text=f"Error Google Earth: {e}", fg=COL_RED)
         mostrar_aviso_integrado("ERROR", f"No se pudo ejecutar Google Earth Pro:\n{e}", COL_RED)
+
+def ejecutar_google_earth_flights():
+    _ensure_airports_loaded()
+    try:
+        MapFlights(arrivals)
+        status = "KML generado / Google Earth solicitado. Vista integrada abajo."
+    except Exception as e:
+        status = f"No se pudo abrir Google Earth: {e}"
+    lookup = _airport_lookup()
+    bcn_airport = lookup.get("LEBL")
+    lines = []
+    seen = set()
+    for flight in arrivals:
+        origin = getattr(flight, "origin", "").strip().upper()
+        airport = lookup.get(origin)
+        if airport:
+            seen.add(origin)
+            if bcn_airport:
+                airport_coords = _airport_coords(airport)
+                bcn_coords = _airport_coords(bcn_airport)
+                if airport_coords and bcn_coords:
+                    lat1, lon1 = airport_coords
+                    lat2, lon2 = bcn_coords
+                    lines.append((lon1, lat1, lon2, lat2))
+    points = []
+    for icao in sorted(seen):
+        coords = _airport_coords(lookup[icao])
+        if coords:
+            lat, lon = coords
+            points.append((icao, lon, lat))
+    if bcn_airport:
+        coords = _airport_coords(bcn_airport)
+        if coords:
+            lat, lon = coords
+            points.append((_airport_code(bcn_airport), lon, lat))
+    fig = _make_map_figure("PREVIEW GOOGLE EARTH - FLIGHTS", points, lines[:80])
+    mostrar_mapa_integrado("GOOGLE EARTH / FLIGHTS", fig, status)
+#Función de la versión 2 que hemos hecho ahora al final
+def ejecutar_google_earth_vuelos_largos():
+    #Genera un archivo KML únicamente con los vuelos que superen los 2000 km hacia/desde LEBL
+    global arrivals
+
+    #Validar que existan vuelos cargados en el sistema
+    if not arrivals:
+        messagebox.showwarning("Atención",
+                               "No hay vuelos cargados. Por favor, pulsa primero el botón '1 LOAD LEBL V3 DATA'.")
+        return
+
+    lista_aeropuertos = _ensure_airports_loaded()
+    ap_dict = {}
+    for ap in lista_aeropuertos:
+        icao_code = _airport_code(ap)
+        coords = _airport_coords(ap)
+        if icao_code and coords:
+            ap_dict[icao_code.upper()] = coords
+
+    #Obtener coordenadas base de Barcelona (LEBL)
+    if "LEBL" in ap_dict:
+        bcn_lat, bcn_lon = ap_dict["LEBL"]
+    else:
+        bcn_lat, bcn_lon = 41.2969, 2.0833
+
+    #Filtrar rutas que superen los 2000 km
+    kml_content = []
+    kml_content.append('<?xml version="1.0" encoding="UTF-8"?>')
+    kml_content.append('<kml xmlns="http://www.opengis.net/kml/2.2">')
+    kml_content.append('<Document>')
+    kml_content.append('  <name>Vuelos Larga Distancia (>2000 km)</name>')
+    kml_content.append(
+        '  <Style id="ruta_larga"><LineStyle><color>ff0000ff</color><width>4</width></LineStyle></Style>')
+
+    vuelos_encontrados = 0
+
+    for flight in arrivals:
+        origin = getattr(flight, "origin", "").strip().upper()
+        if origin in ap_dict:
+            orig_lat, orig_lon = ap_dict[origin]
+
+            # Calcular distancia real
+            distancia = calcular_distancia(bcn_lat, bcn_lon, orig_lat, orig_lon)
+
+            # Filtrar vuelos de más de 2000 km
+            if distancia > 2000:
+                vuelos_encontrados += 1
+                flight_id = getattr(flight, "id", "Desconocido")
+                company = getattr(flight, "company", "Aerolínea")
+
+                # Crear marca de posición y línea geométrica KML
+                kml_content.append('  <Placemark>')
+                kml_content.append(f'    <name>Vuelo {flight_id} ({company})</name>')
+                kml_content.append(f'    <description>Origen: {origin} | Distancia: {int(distancia)} km</description>')
+                kml_content.append('    <styleUrl>#ruta_larga</styleUrl>')
+                kml_content.append('    <LineString>')
+                kml_content.append('      <tessellate>1</tessellate>')
+                kml_content.append(f'      <coordinates>{orig_lon},{orig_lat},0 {bcn_lon},{bcn_lat},0</coordinates>')
+                kml_content.append('    </LineString>')
+                kml_content.append('  </Placemark>')
+
+    kml_content.append('</Document>')
+    kml_content.append('</kml>')
+
+    if vuelos_encontrados == 0:
+        messagebox.showinfo("Información", "No se encontraron vuelos entrantes con una distancia superior a 2000 km.")
+        return
+
+    #Escribir archivo KML y ejecutar Google Earth
+    kml_path = "vuelos_larga_distancia.kml"
+    try:
+        with open(kml_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(kml_content))
+
+        import platform
+        import subprocess
+        if platform.system() == "Windows":
+            os.startfile(kml_path)
+        elif platform.system() == "Darwin":
+            subprocess.run(["open", kml_path])
+        else:
+            subprocess.run(["xdg-open", kml_path])
+
+        label_estado.config(text=f"Mapa con {vuelos_encontrados} vuelos largos enviado a Google Earth", fg=COL_GREEN)
+    except Exception as e:
+        messagebox.showerror("Error", f"No se pudo proyectar en Google Earth: {e}")
 
 
 
