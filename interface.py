@@ -2,7 +2,7 @@ import ctypes
 import os
 import random
 import tkinter as tk
-
+# importamos las libreas necesarias (Algunas sirven para la interfazz, otras para los gráficos, otras para reproducir sonido)
 import matplotlib
 
 matplotlib.use("TkAgg")
@@ -14,11 +14,17 @@ from aircraft import (
     Aircraft, LoadArrivals, PlotArrivals, SaveFlights, PlotAirlines, PlotFlightsType,
     MapFlights, LongDistanceArrivals, LoadDepartures, MergeMovements, NightAircraft
 )
+# datos generales del programa
+# titulo de la ventana
+# rutas de musica y efectos de sonido
+
 from LEBL import (
     LoadAirportStructure, GateOccupancy, AssignGate, SearchTerminal,
     AssignGatesAtTime, PlotDayOccupancy
 )
 
+# colores que se usaran en toda la interfaz
+# facilitan cambiar el diseño mas adelante
 
 APP_TITLE = "AIRPORT MANAGEMENT"
 CLICK_SOUND_PATH = r"C:\Users\Usuario\Downloads\pisseim-mund-online-audio-converter.mp3"
@@ -39,15 +45,22 @@ COL_RED = "#ff7f91"
 COL_INK = "#3b2d4a"
 COL_SHADOW = "#8a6f94"
 
+# carga la fuente principal del proyecto
+# si falla usa una fuente normal
 
 def load_daydream_font():
     return "Fixedsys"
+
+# tamaños de texto usados en la interfaz
 
 
 FONT_FAMILY = load_daydream_font()
 FONT_PIXEL = (FONT_FAMILY, 12)
 FONT_PIXEL_SMALL = (FONT_FAMILY, 8)
 FONT_TITLE = (FONT_FAMILY, 30)
+
+# busca a que terminal pertenece una aerolinea
+# revisa primero las compañias de la t1
 
 
 def ObtenerTerminalAerolinea(id_aerolinea):
@@ -60,6 +73,9 @@ def ObtenerTerminalAerolinea(id_aerolinea):
         pass
     return "T2"
 
+# deja todas las puertas libres
+# se usa para reiniciar simulaciones
+
 
 def resetear_puertas_bcn():
     global bcn
@@ -71,7 +87,8 @@ def resetear_puertas_bcn():
             for gate in area.gates:
                 gate.occupancy = False
                 gate.aircraft_id = ""
-
+                
+# prepara el sonido de click
 
 def init_click_sound():
     if not os.path.exists(CLICK_SOUND_PATH):
@@ -82,7 +99,8 @@ def init_click_sound():
         return ctypes.windll.winmm.mciSendStringW(cmd, None, 0, None) == 0
     except Exception:
         return False
-
+        
+# prepara la musica de fondo
 
 def init_background_music():
     if not os.path.exists(MUSIC_PATH):
@@ -103,6 +121,8 @@ def init_background_music():
         return True
     except Exception:
         return False
+        
+# reproduce el sonido cuando se pulsa algo
 
 
 def play_click_sound(event=None):
@@ -114,6 +134,8 @@ def play_click_sound(event=None):
         ctypes.windll.winmm.mciSendStringW("play retroclick", None, 0, None)
     except Exception:
         pass
+        
+# boton personalizado con estilo retro
 
 
 class RetroButton(tk.Canvas):
@@ -139,6 +161,8 @@ class RetroButton(tk.Canvas):
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)
         self.bind("<Button-1>", self.on_click)
+                     
+# dibuja el aspecto del boton
 
     def draw(self):
         self.delete("all")
@@ -160,23 +184,31 @@ class RetroButton(tk.Canvas):
             justify="center",
             width=w - 18
         )
+        
+# detecta cuando el raton entra en el boton
 
     def on_enter(self, event=None):
         self.hover = True
         self.draw()
+        
+# detecta cuando el raton sale del boton
 
     def on_leave(self, event=None):
         self.hover = False
         self.draw()
+        
+# ejecuta la accion asociada al boton
 
     def on_click(self, event=None):
         if self.command:
             self.command()
+# crea una etiqueta con el estilo del programa
 
 
 def retro_label(parent, text, font=FONT_PIXEL, fg=COL_TEXT, bg=None):
     return tk.Label(parent, text=text, font=font, fg=fg, bg=bg or parent.cget("bg"))
-
+    
+# aplica el diseño visual a un boton normal
 
 def style_regular_button(btn, accent=COL_CYAN):
     btn.configure(
@@ -193,7 +225,7 @@ def style_regular_button(btn, accent=COL_CYAN):
     )
     return btn
 
-
+# muestra mensajes dentro de la ventana
 
 def mostrar_aviso_integrado(titulo, mensaje, color=None, btn_volver=True):
     """Muestra un aviso directamente en frame_display sin popup."""
@@ -206,6 +238,8 @@ def mostrar_aviso_integrado(titulo, mensaje, color=None, btn_volver=True):
     retro_label(panel, mensaje, font=FONT_PIXEL_SMALL, fg=COL_INK, bg=COL_PANEL).pack(pady=5)
     if btn_volver:
         style_regular_button(tk.Button(panel, text="VOLVER", command=mostrar_imagen_original), COL_PINK).pack(pady=12)
+
+# aplica el estilo visual a los graficos
 
 def integrar_grafico_pixel(fig):
     fig.patch.set_facecolor(COL_WHITE)
@@ -248,6 +282,8 @@ menu_frame.grid(row=1, column=0, sticky="ew", padx=0, pady=0)
 
 label_estado = tk.Label(root, text="Listo", font=FONT_PIXEL_SMALL, bg=COL_WHITE, fg=COL_TEXT)
 label_estado.grid(row=2, column=0, sticky="ew", pady=(0, 8))
+
+# listas principales donde se guardan datos
 
 def limpiar_display():
     for widget in frame_display.winfo_children():
@@ -296,6 +332,7 @@ def draw_pixel_star(canvas, x, y, scale=5, color=COL_ORANGE):
     for px, py in pixels:
         canvas.create_rectangle(x + px * p, y + py * p, x + (px + 1) * p, y + (py + 1) * p, fill=color, outline=color)
 
+# dibuja un avion pequeño con pixeles
 
 def draw_big_pixel_airplane(canvas, cx, cy, scale=10):
     art = [
@@ -342,6 +379,7 @@ def draw_big_pixel_airplane(canvas, cx, cy, scale=10):
         y = start_y + 9 * scale
         canvas.create_rectangle(x, y, x + scale, y + scale, fill=COL_ORANGE, outline=COL_ORANGE)
 
+# dibuja la nave del minijuego
 
 def mostrar_imagen_original():
     limpiar_display()
@@ -368,7 +406,8 @@ def mostrar_imagen_original():
         canvas.create_text(w // 2, 70, text="ELIGE UNA SECCION", fill=COL_TEXT, font=(FONT_FAMILY, 22))
 
     canvas.bind("<Configure>", render)
-
+    
+# inicia el minijuego de carga
 
 def mostrar_loading():
     limpiar_menu()
@@ -540,7 +579,8 @@ def mostrar_loading():
         root.after(24, animate)
 
     animate()
-
+    
+# muestra la pantalla start
 
 def mostrar_start():
     limpiar_menu()
@@ -549,7 +589,7 @@ def mostrar_start():
     canvas = tk.Canvas(frame_display, bg=COL_BG, highlightthickness=0)
     canvas.pack(expand=True, fill="both")
     blink = {"on": True}
-
+    
     def enter_start(event=None):
         mostrar_menu_principal()
 
@@ -583,7 +623,8 @@ def mostrar_start():
         root.after(520, render)
 
     render()
-
+    
+# muestra el menu principal
 
 def mostrar_menu_principal():
     root.unbind("<Return>")
@@ -619,7 +660,8 @@ def mostrar_menu_principal():
     for i, (text, cmd, accent) in enumerate(sections):
         btn = RetroButton(panel, text, cmd, fill=COL_PANEL, accent=accent, width=280, height=82, font=(FONT_FAMILY, 12))
         btn.grid(row=0, column=i, padx=18, pady=8)
-
+        
+# crea los submenus
 
 def crear_submenu(titulo, botones, accent):
     limpiar_menu()
@@ -638,6 +680,7 @@ def crear_submenu(titulo, botones, accent):
             btn = RetroButton(row_frame, text, cmd, fill=COL_PANEL, accent=color or accent, width=170, height=64)
             btn.pack(side="left", padx=14)
 
+# cambia entre las distintas secciones
 
 def ir_a_seccion(seccion):
     mostrar_imagen_original()
@@ -651,6 +694,7 @@ def ir_a_seccion(seccion):
         label_estado.config(text="Modulo Barcelona LEBL")
         crear_submenu("BARCELONA LEBL", botones_p3(), COL_ORANGE)
 
+# muestra una lista de vuelos
 
 def mostrar_lista_vuelos(vuelos_filtrados):
     limpiar_display()
@@ -695,6 +739,7 @@ def mostrar_lista_vuelos(vuelos_filtrados):
 
     style_regular_button(tk.Button(frame_display, text="CERRAR LISTA", command=mostrar_imagen_original), COL_PINK).pack(pady=10)
 
+# inserta un grafico dentro de tkinter
 
 def insertar_grafico(funcion_plot, datos, filtro=None):
     if not datos:
@@ -716,6 +761,8 @@ def insertar_grafico(funcion_plot, datos, filtro=None):
 
     if filtro:
         entry_filtro.insert(0, filtro)
+        
+# obtiene atributos de objetos de aeropuerto
 
     def ejecutar_filtro():
         valor = entry_filtro.get().strip().upper()
@@ -780,11 +827,13 @@ def _read_attr(obj, names):
                 return value
     return None
 
+# obtiene el codigo icao
 
 def _airport_code(airport):
     value = _read_attr(airport, ["icao", "ICAO", "code", "Code", "id", "ID", "name", "Name"])
     return str(value).strip().upper() if value not in (None, "") else ""
 
+# obtiene las coordenadas del aeropuerto
 
 def _airport_coords(airport):
     lat = _read_attr(airport, ["lat", "Lat", "latitude", "Latitude", "LAT", "y", "Y"])
@@ -813,7 +862,8 @@ def _airport_coords(airport):
         return float(lat), float(lon)
     except Exception:
         return None
-
+        
+# comprueba si los aeropuertos estan cargados
 
 def _ensure_airports_loaded():
     global airports
@@ -825,6 +875,7 @@ def _ensure_airports_loaded():
         airports = []
     return airports or []
 
+# genera un mapa con los aeropuertos
 
 def _airport_lookup():
     lookup = {}
@@ -834,6 +885,7 @@ def _airport_lookup():
             lookup[code] = airport
     return lookup
 
+# muestra el mapa en la interfaz
 
 def _make_map_figure(title, points, lines=None):
     fig, ax = plt.subplots(figsize=(11, 5.5))
@@ -880,6 +932,7 @@ def mostrar_mapa_integrado(title, fig, status_text):
     retro_label(frame_display, status_text, font=FONT_PIXEL_SMALL, fg=COL_TEXT).pack(pady=(0, 8))
     style_regular_button(tk.Button(frame_display, text="CERRAR MAPA", command=mostrar_imagen_original), COL_PINK).pack(pady=(0, 10))
 
+# exporta datos para google earth
 
 def ejecutar_google_earth_airports():
     loaded_airports = _ensure_airports_loaded()
@@ -897,6 +950,8 @@ def ejecutar_google_earth_airports():
             points.append((code, lon, lat))
     fig = _make_map_figure("PREVIEW GOOGLE EARTH - AIRPORTS", points)
     mostrar_mapa_integrado("GOOGLE EARTH / AIRPORTS", fig, status)
+
+# formulario para añadir un aeropuerto
 
 def mostrar_form_add():
     limpiar_display()
@@ -919,6 +974,8 @@ def mostrar_form_add():
     e_lon = tk.Entry(form, bg=COL_WHITE, fg=COL_INK, insertbackground=COL_INK, font=FONT_PIXEL_SMALL)
     e_lon.grid(row=3, column=1, pady=5, padx=5)
 
+# guarda el aeropuerto introducido
+    
     def guardar():
         try:
             cod = e_icao.get().upper()
@@ -933,6 +990,7 @@ def mostrar_form_add():
     style_regular_button(tk.Button(form, text="ACEPTAR", command=guardar), COL_GREEN).grid(row=4, column=0, pady=15, padx=5)
     style_regular_button(tk.Button(form, text="CANCELAR", command=mostrar_imagen_original), COL_PINK).grid(row=4, column=1, pady=15, padx=5)
 
+# formulario para eliminar un aeropuerto
 
 def mostrar_form_remove():
     limpiar_display()
@@ -945,6 +1003,9 @@ def mostrar_form_remove():
 
     e = tk.Entry(form, font=FONT_PIXEL, bg=COL_WHITE, fg=COL_INK, insertbackground=COL_INK)
     e.pack(pady=10)
+
+    # elimina el aeropuerto seleccionado
+
 
     def borrar():
         cod = e.get().upper()
@@ -961,6 +1022,8 @@ def mostrar_form_remove():
     btns.pack()
     style_regular_button(tk.Button(btns, text="BORRAR", command=borrar), COL_RED).pack(side="left", padx=5)
     style_regular_button(tk.Button(btns, text="VOLVER", command=mostrar_imagen_original), COL_CYAN).pack(side="left", padx=5)
+
+# genera un esquema de terminales y puertas
 
 
 def generar_esquema_visual(datos):
@@ -1035,6 +1098,8 @@ def generar_esquema_visual(datos):
 
     plt.tight_layout()
     return fig
+    
+# crea el control horario interactivo
 
 
 def crear_control_tiempo_integrado(parent):
@@ -1055,6 +1120,9 @@ def crear_control_tiempo_integrado(parent):
     lbl_hora = tk.Label(panel, text="Hora: 00:00", font=FONT_PIXEL, bg=COL_PANEL, fg=COL_CYAN)
     lbl_hora.pack()
 
+    # actualiza el estado de las puertas
+
+    
     def actualizar_hora(val):
         str_hora = str(int(float(val))).zfill(2) + ":00"
         lbl_hora.config(text="Hora: " + str_hora)
@@ -1065,7 +1133,8 @@ def crear_control_tiempo_integrado(parent):
     slider.pack()
 
     style_regular_button(tk.Button(panel, text="RESET", command=lambda: [resetear_puertas_bcn(), slider.set(0)]), COL_ORANGE).pack(pady=4)
-
+    
+# muestra las puertas disponibles
 
 def refrescar_contenido_puertas(datos, mantener_control=False):
     panel_sim = None
@@ -1127,6 +1196,8 @@ def mostrar_lista_puertas(datos):
 
     refrescar_contenido_puertas(datos, mantener_control=True)
 
+# inicia la simulacion interactiva
+
 
 def mostrar_simulador_interactivo():
     if not bcn or not movements:
@@ -1175,6 +1246,8 @@ def mostrar_buscador_integrado():
 
     style_regular_button(tk.Button(cuadro_busqueda, text="BUSCAR", command=realizar_busqueda), COL_GREEN).pack(pady=10)
     style_regular_button(tk.Button(frame_display, text="CERRAR BUSCADOR", command=mostrar_imagen_original), COL_PINK).pack(side="bottom", pady=20)
+    
+# formulario para asignar una puerta
 
 
 def mostrar_form_assign_gate():
@@ -1246,6 +1319,8 @@ def cargar_v4_completo():
     else:
         label_estado.config(text="Error: Revisa el formato de los .txt", fg=COL_RED)
         mostrar_aviso_integrado("ERROR DE CARGA", "No se pudieron procesar los vuelos.\nRevisa los archivos .txt", COL_RED)
+        
+# procesa los vuelos de una hora concreta
 
 
 def mostrar_form_assign_time():
